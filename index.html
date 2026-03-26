@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Le Cloud - PlanET // Super-Pouvoirs</title>
+<title>Le Cloud - Plan.net // Super-Pouvoirs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -21,7 +21,18 @@
   --white: #FFFDF5; --cream: #FFF8E7;
 }
 
-html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Neue','Inter',sans-serif; background: var(--ink); }
+html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Neue','Inter',sans-serif; background: var(--ink); cursor: none; }
+
+/* ── Hero cursor ── */
+#heroCursor {
+  position: fixed; z-index: 300; pointer-events: none;
+  width: 48px; height: 48px;
+  transform: translate(-50%,-50%);
+  filter: drop-shadow(0 0 12px rgba(250,204,21,0.8)) drop-shadow(0 0 25px rgba(250,204,21,0.4));
+  transition: transform 0.05s;
+}
+#heroCursor img { width: 100%; height: 100%; }
+#cursorTrail { position: fixed; inset: 0; z-index: 299; pointer-events: none; }
 
 /* ── Overlays ── */
 #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
@@ -92,7 +103,7 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 .intro-skip {
   position: absolute; bottom: 2rem; right: 2rem; z-index: 15;
   font-family: 'Comic Neue', sans-serif; font-size: 0.75rem;
-  color: rgba(255,255,255,0.3); cursor: pointer;
+  color: rgba(255,255,255,0.3); cursor: none;
   transition: color 0.2s;
 }
 .intro-skip:hover { color: rgba(255,255,255,0.7); }
@@ -288,10 +299,10 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 
 /* ── Nav ── */
 .nav { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 0.75rem; z-index: 100; background: rgba(15,15,26,0.9); backdrop-filter: blur(12px); border-radius: 40px; padding: 0.5rem 1.2rem; border: 2px solid var(--hero-yellow); box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 15px rgba(250,204,21,0.15); }
-.nav-dot { width: 12px; height: 12px; border-radius: 50%; background: #555; cursor: pointer; border: 2px solid var(--ink); transition: background 0.3s, transform 0.3s, box-shadow 0.3s; }
+.nav-dot { width: 12px; height: 12px; border-radius: 50%; background: #555; cursor: none; border: 2px solid var(--ink); transition: background 0.3s, transform 0.3s, box-shadow 0.3s; }
 .nav-dot.active { background: var(--hero-yellow); transform: scale(1.3); box-shadow: 0 0 10px rgba(250,204,21,0.5); }
 .nav-dot:hover:not(.active) { background: #888; }
-.nav-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--hero-yellow); background: transparent; color: var(--hero-yellow); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.nav-btn { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--hero-yellow); background: transparent; color: var(--hero-yellow); font-size: 0.85rem; cursor: none; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
 .nav-btn:hover { background: var(--hero-yellow); color: var(--ink); }
 .nav-btn:disabled { opacity: 0.3; cursor: default; }
 .slide-counter { font-family: 'Bangers', cursive; font-size: 0.85rem; color: var(--hero-yellow); min-width: 2.5rem; text-align: center; }
@@ -315,12 +326,16 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
   <div class="intro-vignette"></div>
   <div class="intro-flash" id="introFlash"></div>
   <div class="intro-logo" id="introLogo">
-    <div class="intro-presents">PLANET PR&Eacute;SENTE</div>
+    <div class="intro-presents">PLAN.NET PR&Eacute;SENTE</div>
     <div class="intro-title">LE CLOUD</div>
     <div class="intro-subtitle">&#9889; Super-Pouvoirs &#9889;</div>
   </div>
   <div class="intro-skip" id="introSkip">Appuyez pour passer &raquo;</div>
 </div>
+
+<!-- Hero cursor -->
+<div id="heroCursor"><img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/26a1.png" alt="⚡"></div>
+<canvas id="cursorTrail"></canvas>
 
 <canvas id="particles"></canvas>
 <div id="flash"></div>
@@ -338,7 +353,7 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
     <div class="halftone"></div>
     <div class="speed-lines"></div>
     <div class="slide-inner">
-      <div class="section-label" data-anim>&#9889; PLATEFORME PLANET</div>
+      <div class="section-label" data-anim>&#9889; PLATEFORME PLAN.NET</div>
       <h1 class="comic-title" data-anim>Le <span class="clash-container" id="clashBox"><span class="clash-word clash-cloud" id="wordCloud">Cloud</span><span class="clash-word clash-claude" id="wordClaude">Claude</span><span class="clash-spark" id="clashSpark">&#128165;</span></span>, votre nouveau<br>SUPER-POUVOIR !</h1>
       <p class="tagline" data-anim>&#128165; L'innovation n'est plus r&eacute;serv&eacute;e aux d&eacute;veloppeurs.</p>
       <div class="cards-row">
@@ -399,7 +414,7 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
     <div class="speed-lines"></div>
     <div class="slide-inner">
       <div class="section-label" data-anim>&#9881;&#65039; INFRASTRUCTURE</div>
-      <h1 class="comic-title" data-anim>Sous le capot :<br>L'infrastructure <span class="glitch-word" id="glitch3">PlanET<span class="glitch-alt">ClaudET</span></span></h1>
+      <h1 class="comic-title" data-anim>Sous le capot :<br>L'infrastructure <span class="glitch-word" id="glitch3">Plan.net<span class="glitch-alt">Claud.net</span></span></h1>
       <div class="flow-row">
         <div class="power-card" data-anim>
           <span class="power-num">1</span>
@@ -498,6 +513,200 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 
 <script>
 (function(){
+
+/* ══════════════════════════════════════════════
+   HERO CURSOR + ENERGY TRAIL
+══════════════════════════════════════════════ */
+const heroCursor = document.getElementById('heroCursor');
+const trailCanvas = document.getElementById('cursorTrail');
+const trailCtx = trailCanvas.getContext('2d');
+let mouseX = -100, mouseY = -100, prevMouseX = -100, prevMouseY = -100;
+let mouseSpeed = 0;
+
+function resizeTrail() { trailCanvas.width = innerWidth; trailCanvas.height = innerHeight; }
+addEventListener('resize', resizeTrail); resizeTrail();
+
+// Preload trail emojis as images
+const trailEmojis = [];
+const emojiUrls = [
+  'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4a5.png', // 💥
+  'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2b50.png',  // ⭐
+  'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/2728.png',  // ✨
+  'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ab.png', // 💫
+  'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f525.png', // 🔥
+];
+emojiUrls.forEach(url => {
+  const img = new Image(); img.src = url;
+  trailEmojis.push(img);
+});
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  heroCursor.style.left = mouseX + 'px';
+  heroCursor.style.top = mouseY + 'px';
+});
+
+// Trail particles
+const trail = [];
+const trailColors = [
+  [250,204,21], // yellow
+  [239,68,68],  // red
+  [59,130,246], // blue
+  [124,58,237], // purple
+  [249,115,22], // orange
+  [255,255,255],// white
+];
+
+class TrailParticle {
+  constructor(x, y, speed) {
+    this.x = x; this.y = y;
+    this.size = Math.random() * 12 + 6 + speed * 2;
+    this.life = 1;
+    this.decay = Math.random() * 0.025 + 0.015;
+    this.vx = (Math.random() - 0.5) * (3 + speed);
+    this.vy = (Math.random() - 0.5) * (3 + speed);
+    this.color = trailColors[Math.floor(Math.random() * trailColors.length)];
+    this.rotation = Math.random() * 6.28;
+    this.rotSpeed = (Math.random() - 0.5) * 0.2;
+    // Some particles are emoji
+    this.isEmoji = Math.random() < 0.15 && speed > 2;
+    if (this.isEmoji) {
+      this.emoji = trailEmojis[Math.floor(Math.random() * trailEmojis.length)];
+      this.size = Math.random() * 20 + 14;
+    }
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vy += 0.08; // slight gravity
+    this.vx *= 0.98;
+    this.life -= this.decay;
+    this.rotation += this.rotSpeed;
+    this.size *= 0.97;
+  }
+  draw(ctx) {
+    if (this.life <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = this.life;
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rotation);
+    if (this.isEmoji && this.emoji.complete) {
+      ctx.drawImage(this.emoji, -this.size/2, -this.size/2, this.size, this.size);
+    } else {
+      // Glowing orb
+      const [r, g, b] = this.color;
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
+      grad.addColorStop(0, `rgba(${r},${g},${b},${this.life})`);
+      grad.addColorStop(0.4, `rgba(${r},${g},${b},${this.life * 0.6})`);
+      grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.size, 0, 6.28);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+// Lightning bolt trail segments
+const bolts = [];
+class LightningBolt {
+  constructor(x, y, speed) {
+    this.points = [{x, y}];
+    const angle = Math.random() * 6.28;
+    const len = speed * 15 + 20;
+    let cx = x, cy = y;
+    const steps = Math.floor(Math.random() * 4) + 3;
+    for (let i = 0; i < steps; i++) {
+      cx += Math.cos(angle) * (len / steps) + (Math.random() - 0.5) * 25;
+      cy += Math.sin(angle) * (len / steps) + (Math.random() - 0.5) * 25;
+      this.points.push({x: cx, y: cy});
+    }
+    this.life = 1;
+    this.decay = 0.06;
+    this.color = Math.random() > 0.5 ? '250,204,21' : '59,130,246';
+  }
+  update() { this.life -= this.decay; }
+  draw(ctx) {
+    if (this.life <= 0 || this.points.length < 2) return;
+    ctx.save();
+    ctx.globalAlpha = this.life;
+    ctx.strokeStyle = `rgba(${this.color},${this.life})`;
+    ctx.lineWidth = 2 + this.life * 2;
+    ctx.shadowColor = `rgba(${this.color},0.8)`;
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.moveTo(this.points[0].x, this.points[0].y);
+    for (let i = 1; i < this.points.length; i++) {
+      ctx.lineTo(this.points[i].x, this.points[i].y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+let trailFrame = 0;
+function trailLoop() {
+  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+
+  // Calculate speed
+  const dx = mouseX - prevMouseX, dy = mouseY - prevMouseY;
+  mouseSpeed = Math.sqrt(dx * dx + dy * dy);
+  prevMouseX = mouseX; prevMouseY = mouseY;
+
+  // Emit particles based on speed
+  if (mouseSpeed > 1) {
+    const count = Math.min(Math.floor(mouseSpeed / 2), 8);
+    for (let i = 0; i < count; i++) {
+      trail.push(new TrailParticle(
+        mouseX + (Math.random() - 0.5) * 10,
+        mouseY + (Math.random() - 0.5) * 10,
+        mouseSpeed / 8
+      ));
+    }
+    // Lightning bolts at high speed
+    if (mouseSpeed > 15 && trailFrame % 3 === 0) {
+      bolts.push(new LightningBolt(mouseX, mouseY, mouseSpeed / 10));
+    }
+  }
+
+  // Always emit a gentle glow
+  if (trailFrame % 3 === 0 && mouseX > 0) {
+    trail.push(new TrailParticle(mouseX, mouseY, 0.5));
+  }
+
+  // Update & draw
+  for (let i = trail.length - 1; i >= 0; i--) {
+    trail[i].update();
+    trail[i].draw(trailCtx);
+    if (trail[i].life <= 0) trail.splice(i, 1);
+  }
+  for (let i = bolts.length - 1; i >= 0; i--) {
+    bolts[i].update();
+    bolts[i].draw(trailCtx);
+    if (bolts[i].life <= 0) bolts.splice(i, 1);
+  }
+
+  // Glow halo at cursor
+  if (mouseX > 0) {
+    const glow = trailCtx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 35 + mouseSpeed);
+    glow.addColorStop(0, `rgba(250,204,21,${0.25 + mouseSpeed * 0.01})`);
+    glow.addColorStop(0.5, `rgba(250,204,21,${0.08})`);
+    glow.addColorStop(1, 'rgba(250,204,21,0)');
+    trailCtx.fillStyle = glow;
+    trailCtx.beginPath();
+    trailCtx.arc(mouseX, mouseY, 35 + mouseSpeed, 0, 6.28);
+    trailCtx.fill();
+  }
+
+  // Scale cursor based on speed
+  const sc = 1 + Math.min(mouseSpeed * 0.008, 0.4);
+  heroCursor.style.transform = `translate(-50%,-50%) scale(${sc}) rotate(${Math.sin(trailFrame * 0.1) * 10}deg)`;
+
+  trailFrame++;
+  requestAnimationFrame(trailLoop);
+}
+trailLoop();
+
 
 /* ══════════════════════════════════════════════
    CANVAS: Particles + Capes + Slips + Masks
@@ -865,7 +1074,7 @@ function buildIntro(){
     {text:'SUPER-POUVOIR',color:'#EF4444'}, {text:'CLAUDE',color:'#7C3AED'},
     {text:'PoC',color:'#16A34A'}, {text:'DEPLOY',color:'#F97316'},
     {text:'CODE',color:'#3B82F6'}, {text:'FORMATION',color:'#FACC15'},
-    {text:'AUTONOMIE',color:'#EF4444'}, {text:'PLANET',color:'#7C3AED'},
+    {text:'AUTONOMIE',color:'#EF4444'}, {text:'PLAN.NET',color:'#7C3AED'},
     {text:'HÉROS',color:'#FACC15'}, {text:'TECH',color:'#3B82F6'},
   ];
 

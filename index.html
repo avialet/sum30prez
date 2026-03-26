@@ -32,6 +32,71 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 #streak { position: fixed; inset: 0; z-index: 52; pointer-events: none; opacity: 0; }
 #shatter { position: fixed; inset: 0; z-index: 52; pointer-events: none; display: none; }
 .shard { position: absolute; background-size: cover; }
+
+/* ══ CINEMATIC INTRO ══ */
+#intro {
+  position: fixed; inset: 0; z-index: 200; background: #0a0a14;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; overflow: hidden;
+}
+#intro.hidden { display: none; }
+
+/* Scrolling keyword strips */
+.intro-strip {
+  position: absolute; white-space: nowrap; font-family: 'Bangers', cursive;
+  letter-spacing: 0.08em; opacity: 0;
+  -webkit-text-stroke: 1px rgba(0,0,0,0.5);
+}
+.intro-strip span {
+  display: inline-block; padding: 0 1.5rem;
+}
+
+/* Flash panels (simulated comic pages) */
+.intro-panel {
+  position: absolute; border: 3px solid rgba(255,255,255,0.15);
+  border-radius: 4px; opacity: 0;
+}
+
+/* Central logo reveal */
+.intro-logo {
+  position: relative; z-index: 10; text-align: center; opacity: 0;
+}
+.intro-logo .intro-presents {
+  font-family: 'Bangers', cursive; font-size: 1.2rem;
+  color: rgba(255,255,255,0.6); letter-spacing: 0.3em;
+  margin-bottom: 0.8rem;
+}
+.intro-logo .intro-title {
+  font-family: 'Bangers', cursive; font-size: clamp(4rem,10vw,8rem);
+  color: var(--hero-red);
+  -webkit-text-stroke: 2px var(--ink);
+  text-shadow: 4px 4px 0 var(--hero-yellow), 6px 6px 0 rgba(0,0,0,0.5);
+  line-height: 1;
+}
+.intro-logo .intro-subtitle {
+  font-family: 'Bangers', cursive; font-size: clamp(1.5rem,4vw,2.5rem);
+  color: var(--hero-yellow);
+  -webkit-text-stroke: 1px var(--ink);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+  letter-spacing: 0.05em; margin-top: 0.3rem;
+}
+.intro-flash {
+  position: absolute; inset: 0; background: white; opacity: 0; z-index: 5;
+}
+.intro-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+  z-index: 4; pointer-events: none;
+}
+/* Countdown / skip hint */
+.intro-skip {
+  position: absolute; bottom: 2rem; right: 2rem; z-index: 15;
+  font-family: 'Comic Neue', sans-serif; font-size: 0.75rem;
+  color: rgba(255,255,255,0.3); cursor: pointer;
+  transition: color 0.2s;
+}
+.intro-skip:hover { color: rgba(255,255,255,0.7); }
+
 .star-burst { position: fixed; inset: 0; z-index: 45; pointer-events: none; overflow: hidden; }
 .star { position: absolute; pointer-events: none; font-size: 1.2rem; -webkit-text-stroke: 1px rgba(0,0,0,0.3); }
 
@@ -105,12 +170,39 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 .hero-card h3 { font-family: 'Bangers', cursive; font-size: 1.15rem; color: var(--ink); margin-bottom: 0.3rem; }
 .hero-card p { font-size: 0.82rem; color: #444; line-height: 1.5; font-weight: 700; }
 
-/* Glitch text */
+/* Glitch text (slide 3) */
 .glitch-word { position: relative; display: inline-block; }
 .glitch-word .glitch-alt {
   position: absolute; inset: 0; color: var(--hero-yellow);
   opacity: 0; font-family: inherit; font-size: inherit; font-weight: inherit;
   -webkit-text-stroke: inherit; text-shadow: inherit;
+}
+
+/* ── Cloud vs Claude collision (slide 1) ── */
+.clash-container {
+  position: relative; display: inline-block; min-width: 4.5em;
+  height: 1.15em; vertical-align: bottom;
+}
+.clash-word {
+  position: absolute; top: 0; white-space: nowrap;
+  font-family: 'Bangers', cursive;
+  transition: none;
+}
+.clash-cloud {
+  color: var(--white); left: 0;
+  -webkit-text-stroke: 1.5px rgba(0,0,0,0.4);
+  text-shadow: 3px 3px 0 var(--hero-red), 5px 5px 0 rgba(0,0,0,0.3);
+}
+.clash-claude {
+  color: var(--hero-yellow); opacity: 0;
+  left: 0;
+  -webkit-text-stroke: 1.5px rgba(0,0,0,0.5);
+  text-shadow: 3px 3px 0 var(--hero-purple), 5px 5px 0 rgba(0,0,0,0.3);
+  filter: drop-shadow(0 0 15px rgba(250,204,21,0.6));
+}
+.clash-spark {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 2.5rem; opacity: 0; pointer-events: none; z-index: 10;
 }
 
 /* ═══ SLIDE 2 ═══ */
@@ -218,6 +310,18 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
 </head>
 <body>
 
+<!-- ══ CINEMATIC INTRO ══ -->
+<div id="intro">
+  <div class="intro-vignette"></div>
+  <div class="intro-flash" id="introFlash"></div>
+  <div class="intro-logo" id="introLogo">
+    <div class="intro-presents">PLANET PR&Eacute;SENTE</div>
+    <div class="intro-title">LE CLOUD</div>
+    <div class="intro-subtitle">&#9889; Super-Pouvoirs &#9889;</div>
+  </div>
+  <div class="intro-skip" id="introSkip">Appuyez pour passer &raquo;</div>
+</div>
+
 <canvas id="particles"></canvas>
 <div id="flash"></div>
 <div id="spotlight"></div>
@@ -235,7 +339,7 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
     <div class="speed-lines"></div>
     <div class="slide-inner">
       <div class="section-label" data-anim>&#9889; PLATEFORME PLANET</div>
-      <h1 class="comic-title" data-anim>Le <span class="glitch-word" id="glitch1">Cloud<span class="glitch-alt">Claude</span></span>, votre nouveau<br>SUPER-POUVOIR !</h1>
+      <h1 class="comic-title" data-anim>Le <span class="clash-container" id="clashBox"><span class="clash-word clash-cloud" id="wordCloud">Cloud</span><span class="clash-word clash-claude" id="wordClaude">Claude</span><span class="clash-spark" id="clashSpark">&#128165;</span></span>, votre nouveau<br>SUPER-POUVOIR !</h1>
       <p class="tagline" data-anim>&#128165; L'innovation n'est plus r&eacute;serv&eacute;e aux d&eacute;veloppeurs.</p>
       <div class="cards-row">
         <div class="hero-card" data-anim>
@@ -686,21 +790,204 @@ function powerUpTransition(){
 /* ══════════════════════════════════════════════
    GLITCH TEXT: Cloud → Claude
 ══════════════════════════════════════════════ */
-function glitchWord(el, intensity=0.3, duration=0.15){
+// ── Slide 3 glitch (subtle) ──
+function glitchWord(el){
   if(!el) return;
   const alt=el.querySelector('.glitch-alt');
   if(!alt) return;
   gsap.timeline()
     .to(alt,{opacity:1,duration:0.05})
     .to(el,{x:2,skewX:5,duration:0.05},'<')
-    .to(alt,{opacity:0,duration:0.05},'+='+duration)
+    .to(alt,{opacity:0,duration:0.05},'+=0.8')
     .to(el,{x:0,skewX:0,duration:0.05},'<');
 }
+setInterval(()=>{if(currentSlide===2) glitchWord(document.getElementById('glitch3'));}, 3000);
 
-// Slide 1: subtle flicker every ~4s
-setInterval(()=>{if(currentSlide===0) glitchWord(document.getElementById('glitch1'),0.3,0.1);}, 4000);
-// Slide 3: more intense, stays longer
-setInterval(()=>{if(currentSlide===2) glitchWord(document.getElementById('glitch3'),0.5,0.8);}, 3000);
+// ── Slide 1: Cloud vs Claude COLLISION ──
+const wordCloud=document.getElementById('wordCloud');
+const wordClaude=document.getElementById('wordClaude');
+const clashSpark=document.getElementById('clashSpark');
+const clashBox=document.getElementById('clashBox');
+
+function cloudClaudeClash(){
+  if(currentSlide!==0) return;
+  const tl=gsap.timeline();
+
+  // 1. Cloud shakes to signal something is coming
+  tl.to(wordCloud,{x:3,duration:0.05,repeat:5,yoyo:true,ease:'none'})
+  // 2. Claude appears from the right and slams in
+    .set(wordClaude,{opacity:1,x:120,scale:1.3,rotation:5})
+    .to(wordClaude,{x:0,scale:1,rotation:0,duration:0.3,ease:'power4.in'})
+  // 3. Cloud gets pushed left on impact
+    .to(wordCloud,{x:-15,opacity:0.4,scale:0.95,duration:0.15,ease:'power2.out'},'<+=0.2')
+  // 4. SPARK on collision
+    .to(clashSpark,{opacity:1,scale:1.5,duration:0.1,ease:'power4.out'},'<')
+    .to(clashSpark,{opacity:0,scale:2.5,duration:0.3,ease:'power2.out'})
+  // 5. Both words flicker/fight for dominance
+    .to(wordClaude,{opacity:0,duration:0.06,delay:0.3})
+    .to(wordCloud,{x:0,opacity:1,scale:1,duration:0.06},'<')
+    .to(wordClaude,{opacity:1,duration:0.06,delay:0.15})
+    .to(wordCloud,{opacity:0.3,x:-5,duration:0.06},'<')
+    .to(wordClaude,{opacity:0,duration:0.06,delay:0.15})
+    .to(wordCloud,{opacity:1,x:0,duration:0.06},'<')
+    .to(wordClaude,{opacity:1,duration:0.06,delay:0.12})
+    .to(wordCloud,{opacity:0.3,x:-8,duration:0.06},'<')
+  // 6. Claude wins briefly with a glow
+    .to(wordClaude,{scale:1.08,duration:0.2,ease:'power2.out'})
+    .to(wordCloud,{opacity:0,duration:0.15},'<')
+  // 7. Then Cloud fights back and wins
+    .to(wordClaude,{x:80,opacity:0,scale:0.8,rotation:-5,duration:0.25,ease:'power2.in',delay:0.6})
+    .to(wordCloud,{opacity:1,x:0,scale:1,duration:0.2,ease:'back.out(2)'},'<+=0.1')
+  // 8. Cloud settles back, but with a yellow flicker to hint
+    .to(wordCloud,{color:'#FACC15',duration:0.1,delay:0.2})
+    .to(wordCloud,{color:'#FFFDF5',duration:0.3});
+}
+
+// Run clash every 5 seconds on slide 1
+setInterval(cloudClaudeClash, 5500);
+
+
+/* ══════════════════════════════════════════════
+   CINEMATIC INTRO
+══════════════════════════════════════════════ */
+const introEl=document.getElementById('intro');
+const introLogo=document.getElementById('introLogo');
+const introFlash=document.getElementById('introFlash');
+const introSkip=document.getElementById('introSkip');
+let introSkipped=false;
+
+function buildIntro(){
+  const tl=gsap.timeline({onComplete: endIntro});
+
+  // Keywords that flash by
+  const keywords=[
+    {text:'CLOUD',color:'#3B82F6'}, {text:'INNOVATION',color:'#FACC15'},
+    {text:'SUPER-POUVOIR',color:'#EF4444'}, {text:'CLAUDE',color:'#7C3AED'},
+    {text:'PoC',color:'#16A34A'}, {text:'DEPLOY',color:'#F97316'},
+    {text:'CODE',color:'#3B82F6'}, {text:'FORMATION',color:'#FACC15'},
+    {text:'AUTONOMIE',color:'#EF4444'}, {text:'PLANET',color:'#7C3AED'},
+    {text:'HÉROS',color:'#FACC15'}, {text:'TECH',color:'#3B82F6'},
+  ];
+
+  // Create 5 horizontal strips at different Y positions
+  const stripConfigs=[
+    {y:'12%',size:'3rem',speed:1,dir:1},
+    {y:'30%',size:'4.5rem',speed:0.8,dir:-1},
+    {y:'50%',size:'6rem',speed:1.2,dir:1},
+    {y:'68%',size:'4rem',speed:0.9,dir:-1},
+    {y:'85%',size:'3.5rem',speed:1.1,dir:1},
+  ];
+
+  const strips=[];
+  stripConfigs.forEach((cfg,si)=>{
+    const strip=document.createElement('div');
+    strip.className='intro-strip';
+    strip.style.top=cfg.y; strip.style.fontSize=cfg.size;
+    strip.style.left=cfg.dir>0?'-200%':'0%';
+    // Fill strip with repeated keywords
+    const shuffled=[...keywords].sort(()=>Math.random()-0.5);
+    for(let r=0;r<4;r++){
+      shuffled.forEach(kw=>{
+        const sp=document.createElement('span');
+        sp.textContent=kw.text; sp.style.color=kw.color;
+        strip.appendChild(sp);
+      });
+    }
+    introEl.insertBefore(strip,introLogo);
+    strips.push({el:strip,cfg});
+  });
+
+  // Create random flash panels (colored rectangles like comic panels)
+  const panelColors=['#DC2626','#1E40AF','#FACC15','#7C3AED','#16A34A','#F97316'];
+  for(let i=0;i<12;i++){
+    const panel=document.createElement('div');
+    panel.className='intro-panel';
+    const pw=Math.random()*20+10, ph=Math.random()*25+10;
+    panel.style.cssText=`width:${pw}%;height:${ph}%;left:${Math.random()*80}%;top:${Math.random()*80}%;background:${panelColors[i%panelColors.length]};`;
+    introEl.insertBefore(panel,introLogo);
+
+    // Flash panels in and out rapidly at staggered times
+    tl.to(panel,{opacity:0.5,duration:0.06,ease:'power4.in'},0.3+i*0.08)
+      .to(panel,{opacity:0,duration:0.06},0.3+i*0.08+0.06+Math.random()*0.1);
+  }
+
+  // Phase 1: Strips scroll across (0s-2.5s)
+  strips.forEach(({el,cfg},i)=>{
+    tl.to(el,{opacity:0.7,duration:0.1},0.1+i*0.15);
+    const fromX=cfg.dir>0?'-150%':'50%';
+    const toX=cfg.dir>0?'50%':'-150%';
+    gsap.set(el,{left:fromX});
+    tl.to(el,{left:toX,duration:2.2/cfg.speed,ease:'none'},0.1+i*0.15);
+  });
+
+  // Intermittent flashes during strip scroll
+  [0.5,0.9,1.3,1.7].forEach(t=>{
+    tl.to(introFlash,{opacity:0.4,duration:0.04},t)
+      .to(introFlash,{opacity:0,duration:0.08},t+0.04);
+  });
+
+  // Phase 2: Speed up - all strips accelerate (2s-3s)
+  strips.forEach(({el,cfg},i)=>{
+    tl.to(el,{opacity:0.9,duration:0.1},2.0);
+  });
+
+  // Phase 3: Big flash → everything disappears (3s)
+  tl.to(introFlash,{opacity:1,duration:0.1},2.8);
+  strips.forEach(({el})=>{
+    tl.to(el,{opacity:0,duration:0.01},2.85);
+  });
+  tl.to(introFlash,{opacity:0,duration:0.4},2.9);
+
+  // Phase 4: Logo reveal (3s-4.5s)
+  tl.to(introLogo,{opacity:1,duration:0.01},3.1)
+    .fromTo(introLogo.querySelector('.intro-presents'),
+      {opacity:0,y:15,letterSpacing:'0.8em'},
+      {opacity:1,y:0,letterSpacing:'0.3em',duration:0.6,ease:'power2.out'},3.1)
+    .fromTo(introLogo.querySelector('.intro-title'),
+      {opacity:0,scale:3,rotationX:40},
+      {opacity:1,scale:1,rotationX:0,duration:0.5,ease:'back.out(1.5)'},3.4)
+    .fromTo(introLogo.querySelector('.intro-subtitle'),
+      {opacity:0,y:20},
+      {opacity:1,y:0,duration:0.4,ease:'power2.out'},3.7);
+
+  // Flash on title slam
+  tl.to(introFlash,{opacity:0.6,duration:0.05},3.4)
+    .to(introFlash,{opacity:0,duration:0.2},3.45);
+
+  // Phase 5: Hold, then fade out (4.5s-5.5s)
+  tl.to(introLogo,{scale:1.05,duration:0.8,ease:'power1.inOut'},4.2)
+    .to(introEl,{opacity:0,duration:0.5},5.0);
+
+  return tl;
+}
+
+function endIntro(){
+  introEl.classList.add('hidden');
+  // Now play slide 1 entrance
+  gsap.set(slides_ref[0],{opacity:1,rotationY:0,z:0,scale:1});
+  slides_ref[0].querySelectorAll('[data-anim]').forEach(el=>gsap.set(el,{opacity:0}));
+  buildEnter(slides_ref[0]).play();
+  emitStars(30);
+  // Start Cloud vs Claude clash after intro
+  setTimeout(cloudClaudeClash, 2500);
+}
+
+function skipIntro(){
+  if(introSkipped) return;
+  introSkipped=true;
+  gsap.killTweensOf('*');
+  gsap.to(introEl,{opacity:0,duration:0.3,onComplete:endIntro});
+}
+
+introSkip.addEventListener('click',skipIntro);
+document.addEventListener('keydown',function introKey(e){
+  if(!introEl.classList.contains('hidden')){
+    skipIntro(); e.preventDefault();
+  }
+},{once:false});
+
+// We need a reference to slides before starting - store for later
+let slides_ref;
 
 
 /* ══════════════════════════════════════════════
@@ -822,11 +1109,14 @@ function hideHint(){if(!hintVis)return;hintVis=false;gsap.to(hint,{opacity:0,dur
 document.addEventListener('keydown',hideHint);
 document.addEventListener('click',hideHint);
 
-// Init
-gsap.set(slides[0],{opacity:1,rotationY:0,z:0,scale:1});
+// Init - slide 1 starts hidden, intro plays first
+slides_ref = slides;
+gsap.set(slides[0],{opacity:0});
 slides[0].querySelectorAll('[data-anim]').forEach(el=>gsap.set(el,{opacity:0}));
-gsap.delayedCall(0.4,()=>{buildEnter(slides[0]).play();emitStars(30);});
 updateUI();
+
+// Launch cinematic intro
+gsap.delayedCall(0.3, ()=>buildIntro());
 
 })();
 </script>

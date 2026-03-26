@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -31,429 +32,177 @@
     background: var(--dark);
   }
 
-  /* ── Slide container ── */
-  .slides {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-  }
+  /* ── Slides ── */
+  .slides { position: relative; width: 100vw; height: 100vh; }
 
   .slide {
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.6s ease, transform 0.6s ease;
-    transform: translateX(60px);
+    visibility: hidden;
     overflow: hidden;
   }
-  .slide.active {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(0);
-  }
-  .slide.exit-left {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
+  .slide.active { visibility: visible; }
 
-  /* ── Top accent bar ── */
-  .accent-bar {
-    height: 4px;
-    background: var(--teal);
-    width: 100%;
-    flex-shrink: 0;
-  }
+  /* ── Accent bar ── */
+  .accent-bar { height: 4px; background: var(--teal); width: 100%; flex-shrink: 0; }
 
-  /* ── Section label ── */
   .section-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.25em; text-transform: uppercase;
     margin-bottom: 0.25rem;
   }
 
-  /* ── Slide inner layout ── */
   .slide-inner {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    flex: 1; display: flex; flex-direction: column;
     padding: 2.5rem 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
+    max-width: 1200px; margin: 0 auto; width: 100%;
   }
 
-  /* ─────────────────────────────────────────────
-     SLIDE 1 - Title
-  ───────────────────────────────────────────── */
+  /* ═══ SLIDE 1 ═══ */
   .slide-1 { background: var(--dark); }
   .slide-1 .section-label { color: var(--teal); }
   .slide-1 .main-title {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 800;
-    color: var(--white);
-    line-height: 1.15;
-    margin-bottom: 1rem;
+    font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+    color: var(--white); line-height: 1.15; margin-bottom: 1rem;
   }
-  .slide-1 .separator {
-    width: 80px;
-    height: 3px;
-    background: var(--teal);
-    margin-bottom: 0.75rem;
-  }
-  .slide-1 .tagline {
-    font-size: 1rem;
-    color: var(--slate-400);
-    font-style: italic;
-    margin-bottom: 2.5rem;
-  }
+  .slide-1 .separator { width: 80px; height: 3px; background: var(--teal); margin-bottom: 0.75rem; }
+  .slide-1 .tagline { font-size: 1rem; color: var(--slate-400); font-style: italic; margin-bottom: 2.5rem; }
 
-  /* Cards row */
-  .cards-row {
-    display: flex;
-    gap: 1.5rem;
-    flex: 1;
-    align-items: center;
-  }
+  .cards-row { display: flex; gap: 1.5rem; flex: 1; align-items: center; }
   .card-1 {
-    flex: 1;
-    background: var(--dark-mid);
-    border-radius: 12px;
-    padding: 1.8rem 1.2rem 1.4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+    flex: 1; background: var(--dark-mid); border-radius: 12px;
+    padding: 1.8rem 1.2rem 1.4rem; display: flex; flex-direction: column;
+    align-items: center; text-align: center;
     box-shadow: 0 4px 24px rgba(0,0,0,0.18);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    opacity: 0;
-    transform: translateY(30px);
   }
-  .slide.active .card-1 {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .slide.active .card-1:nth-child(1) { transition-delay: 0.2s; }
-  .slide.active .card-1:nth-child(2) { transition-delay: 0.35s; }
-  .slide.active .card-1:nth-child(3) { transition-delay: 0.5s; }
-
-  .card-1:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(6,182,212,0.15);
-  }
-
   .card-icon-circle {
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    border: 2px solid var(--teal);
-    background: var(--dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-    color: var(--teal);
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--teal); background: var(--dark);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem; font-size: 1.3rem; color: var(--teal);
   }
-  .card-1 h3 {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--teal);
-    margin-bottom: 0.5rem;
-  }
-  .card-1 p {
-    font-size: 0.82rem;
-    color: var(--slate-300);
-    line-height: 1.5;
-  }
+  .card-1 h3 { font-size: 0.95rem; font-weight: 700; color: var(--teal); margin-bottom: 0.5rem; }
+  .card-1 p { font-size: 0.82rem; color: var(--slate-300); line-height: 1.5; }
 
-  /* ─────────────────────────────────────────────
-     SLIDE 2 - Le cas Tom
-  ───────────────────────────────────────────── */
+  /* ═══ SLIDE 2 ═══ */
   .slide-2 { background: var(--light); }
   .slide-2 .section-label { color: var(--teal-dark); }
   .slide-2 .main-title {
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-    font-weight: 800;
-    color: var(--dark);
-    margin-bottom: 2rem;
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800;
+    color: var(--dark); margin-bottom: 2rem;
   }
 
-  .steps-col {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    flex: 1;
-    justify-content: center;
-  }
+  .steps-col { display: flex; flex-direction: column; gap: 0.8rem; flex: 1; justify-content: center; }
 
   .step-card {
-    background: var(--white);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    padding: 1.2rem 1.5rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateX(-30px);
-    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+    background: var(--white); border-radius: 10px;
+    display: flex; align-items: center; gap: 1.2rem;
+    padding: 1.2rem 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    position: relative; overflow: hidden;
   }
-  .slide.active .step-card {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  .slide.active .step-card:nth-child(1) { transition-delay: 0.15s; }
-  .slide.active .step-card:nth-child(2) { transition-delay: 0.3s; }
-  .slide.active .step-card:nth-child(3) { transition-delay: 0.45s; }
-
-  .step-card:hover {
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  }
-
   .step-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
-    border-radius: 10px 0 0 10px;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 4px; border-radius: 10px 0 0 10px;
   }
   .step-card.amber::before { background: var(--amber); }
   .step-card.teal::before { background: var(--teal); }
   .step-card.emerald::before { background: var(--emerald); }
 
   .step-icon {
-    width: 44px; height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
+    width: 44px; height: 44px; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0;
   }
   .step-card.amber .step-icon { color: var(--amber); }
   .step-card.teal .step-icon { color: var(--teal); }
   .step-card.emerald .step-icon { color: var(--emerald); }
 
-  .step-text h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--dark);
-    margin-bottom: 0.15rem;
-  }
-  .step-text p {
-    font-size: 0.85rem;
-    color: var(--slate-500);
-  }
+  .step-text h3 { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 0.15rem; }
+  .step-text p { font-size: 0.85rem; color: var(--slate-500); }
 
-  /* Connector */
   .step-connector {
-    width: 2px;
-    height: 16px;
-    margin-left: 2.7rem;
-    background: repeating-linear-gradient(
-      to bottom,
-      var(--slate-300) 0, var(--slate-300) 4px,
-      transparent 4px, transparent 8px
-    );
+    width: 2px; height: 16px; margin-left: 2.7rem;
+    background: repeating-linear-gradient(to bottom, var(--slate-300) 0, var(--slate-300) 4px, transparent 4px, transparent 8px);
   }
 
-  /* ─────────────────────────────────────────────
-     SLIDE 3 - Infrastructure
-  ───────────────────────────────────────────── */
+  /* ═══ SLIDE 3 ═══ */
   .slide-3 { background: var(--dark); }
   .slide-3 .section-label { color: var(--teal); }
   .slide-3 .main-title {
-    font-size: clamp(1.8rem, 3.5vw, 2.5rem);
-    font-weight: 800;
-    color: var(--white);
-    margin-bottom: 2rem;
+    font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800;
+    color: var(--white); margin-bottom: 2rem;
   }
 
-  .flow-row {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    flex: 1;
-    justify-content: center;
-  }
+  .flow-row { display: flex; align-items: center; gap: 0; flex: 1; justify-content: center; }
 
   .flow-card {
-    width: 240px;
-    background: #0E4D64;
-    border-radius: 14px;
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 6px 28px rgba(0,0,0,0.25);
-    overflow: hidden;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+    width: 240px; background: #0E4D64; border-radius: 14px;
+    padding: 1.5rem 1rem; display: flex; flex-direction: column;
+    align-items: center; text-align: center; position: relative;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.25); overflow: hidden;
   }
-  .slide.active .flow-card {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .slide.active .flow-card:nth-child(1) { transition-delay: 0.15s; }
-  .slide.active .flow-card:nth-child(3) { transition-delay: 0.35s; }
-  .slide.active .flow-card:nth-child(5) { transition-delay: 0.55s; }
-
-  .flow-card:hover {
-    box-shadow: 0 8px 36px rgba(6,182,212,0.2);
-    transform: scale(1.02);
-  }
-
   .flow-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: var(--teal);
-    border-radius: 14px 14px 0 0;
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; background: var(--teal); border-radius: 14px 14px 0 0;
   }
-
-  .flow-number {
-    position: absolute;
-    top: 12px; left: 14px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--teal);
-  }
-
+  .flow-number { position: absolute; top: 12px; left: 14px; font-size: 0.8rem; font-weight: 700; color: var(--teal); }
   .flow-icon-circle {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: var(--teal-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--white);
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--teal-dark); display: flex; align-items: center;
+    justify-content: center; font-size: 1.5rem; color: var(--white);
     margin: 0.5rem 0 1rem;
   }
+  .flow-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--white); margin-bottom: 0.4rem; }
+  .flow-card p { font-size: 0.8rem; color: var(--slate-300); line-height: 1.5; }
 
-  .flow-card h3 {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 0.4rem;
-  }
-  .flow-card p {
-    font-size: 0.8rem;
-    color: var(--slate-300);
-    line-height: 1.5;
-  }
+  .flow-arrow { font-size: 1.3rem; color: var(--slate-400); margin: 0 1.2rem; }
 
-  .flow-arrow {
-    font-size: 1.3rem;
-    color: var(--slate-400);
-    margin: 0 1.2rem;
-    opacity: 0;
-    transition: opacity 0.5s ease 0.4s;
-  }
-  .slide.active .flow-arrow { opacity: 1; }
-
-  /* Bottom bar */
   .bottom-bar {
-    background: var(--dark-mid);
-    padding: 0.8rem 4rem;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--slate-400);
-    font-size: 0.85rem;
-    font-style: italic;
+    background: var(--dark-mid); padding: 0.8rem 4rem;
+    display: flex; align-items: center; gap: 0.6rem;
+    color: var(--slate-400); font-size: 0.85rem; font-style: italic;
   }
-  .bottom-bar i { color: var(--slate-400); }
 
-  /* ── Navigation ── */
+  /* ── Nav ── */
   .nav {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    z-index: 100;
-    background: rgba(30,41,59,0.85);
-    backdrop-filter: blur(12px);
-    border-radius: 40px;
-    padding: 0.5rem 1.2rem;
+    position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 0.75rem; z-index: 100;
+    background: rgba(30,41,59,0.85); backdrop-filter: blur(12px);
+    border-radius: 40px; padding: 0.5rem 1.2rem;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   }
-
   .nav-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--slate-500);
-    cursor: pointer;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--slate-500); cursor: pointer;
     transition: background 0.3s, transform 0.3s;
   }
-  .nav-dot.active {
-    background: var(--teal);
-    transform: scale(1.3);
-  }
-  .nav-dot:hover:not(.active) {
-    background: var(--slate-300);
-  }
+  .nav-dot.active { background: var(--teal); transform: scale(1.3); }
+  .nav-dot:hover:not(.active) { background: var(--slate-300); }
 
   .nav-btn {
-    width: 34px; height: 34px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: var(--slate-300);
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 34px; height: 34px; border-radius: 50%; border: none;
+    background: transparent; color: var(--slate-300); font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
     transition: background 0.2s, color 0.2s;
   }
-  .nav-btn:hover {
-    background: rgba(6,182,212,0.15);
-    color: var(--teal);
-  }
-  .nav-btn:disabled {
-    opacity: 0.3;
-    cursor: default;
-  }
+  .nav-btn:hover { background: rgba(6,182,212,0.15); color: var(--teal); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
 
   .slide-counter {
-    font-size: 0.7rem;
-    color: var(--slate-400);
-    font-variant-numeric: tabular-nums;
-    min-width: 2.5rem;
-    text-align: center;
+    font-size: 0.7rem; color: var(--slate-400);
+    font-variant-numeric: tabular-nums; min-width: 2.5rem; text-align: center;
   }
 
-  /* ── Keyboard hint ── */
   .hint {
-    position: fixed;
-    bottom: 4.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.65rem;
-    color: var(--slate-500);
-    opacity: 0.7;
-    pointer-events: none;
-    transition: opacity 1s;
+    position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
+    font-size: 0.65rem; color: var(--slate-500); pointer-events: none;
   }
 
-  /* ── Responsive ── */
   @media (max-width: 768px) {
     .slide-inner { padding: 1.5rem 1.5rem 1rem; }
     .cards-row { flex-direction: column; gap: 1rem; }
-    .card-1 { padding: 1.2rem 1rem; }
     .flow-row { flex-direction: column; gap: 1rem; }
     .flow-arrow { transform: rotate(90deg); margin: 0; }
     .flow-card { width: 100%; max-width: 280px; }
@@ -469,25 +218,25 @@
   <div class="slide slide-1 active" data-index="0">
     <div class="accent-bar"></div>
     <div class="slide-inner">
-      <div class="section-label">PLATEFORME PLANET</div>
-      <h1 class="main-title">Le Cloud, votre nouveau<br>super-pouvoir</h1>
-      <div class="separator"></div>
-      <p class="tagline">L'innovation n'est plus reservee aux developpeurs.</p>
+      <div class="section-label" data-anim>PLATEFORME PLANET</div>
+      <h1 class="main-title" data-anim>Le Cloud, votre nouveau<br>super-pouvoir</h1>
+      <div class="separator" data-anim></div>
+      <p class="tagline" data-anim>L'innovation n'est plus r&eacute;serv&eacute;e aux d&eacute;veloppeurs.</p>
       <div class="cards-row">
-        <div class="card-1">
+        <div class="card-1" data-anim>
           <div class="card-icon-circle"><i class="fas fa-cloud"></i></div>
-          <h3>Acces ouvert</h3>
-          <p>Cloud accessible<br>a toute l'equipe</p>
+          <h3>Acc&egrave;s ouvert</h3>
+          <p>Cloud accessible<br>&agrave; toute l'&eacute;quipe</p>
         </div>
-        <div class="card-1">
+        <div class="card-1" data-anim>
           <div class="card-icon-circle"><i class="fas fa-flask"></i></div>
-          <h3>PoC simplifiee</h3>
-          <p>Creez vos Proof of<br>Concept facilement</p>
+          <h3>PoC simplifi&eacute;e</h3>
+          <p>Cr&eacute;ez vos Proof of<br>Concept facilement</p>
         </div>
-        <div class="card-1">
+        <div class="card-1" data-anim>
           <div class="card-icon-circle"><i class="fas fa-users"></i></div>
           <h3>Autonomie</h3>
-          <p>Testez et prototypez<br>vos idees</p>
+          <p>Testez et prototypez<br>vos id&eacute;es</p>
         </div>
       </div>
     </div>
@@ -497,30 +246,30 @@
   <div class="slide slide-2" data-index="1">
     <div class="accent-bar"></div>
     <div class="slide-inner">
-      <div class="section-label">RETOUR D'EXPERIENCE</div>
-      <h1 class="main-title">De l'idee a la realite : Le cas Tom</h1>
+      <div class="section-label" data-anim>RETOUR D'EXP&Eacute;RIENCE</div>
+      <h1 class="main-title" data-anim>De l'id&eacute;e &agrave; la r&eacute;alit&eacute; : Le cas Tom</h1>
       <div class="steps-col">
-        <div class="step-card amber">
+        <div class="step-card amber" data-anim>
           <div class="step-icon"><i class="fas fa-lightbulb"></i></div>
           <div class="step-text">
-            <h3>Idee</h3>
-            <p>Un projet pense et deploye rapidement</p>
+            <h3>Id&eacute;e</h3>
+            <p>Un projet pens&eacute; et d&eacute;ploy&eacute; rapidement</p>
           </div>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-card teal">
+        <div class="step-connector" data-anim></div>
+        <div class="step-card teal" data-anim>
           <div class="step-icon"><i class="fas fa-handshake"></i></div>
           <div class="step-text">
             <h3>Co-construction</h3>
-            <p>Une collaboration efficace entre metier et tech</p>
+            <p>Une collaboration efficace entre m&eacute;tier et tech</p>
           </div>
         </div>
-        <div class="step-connector"></div>
-        <div class="step-card emerald">
+        <div class="step-connector" data-anim></div>
+        <div class="step-card emerald" data-anim>
           <div class="step-icon"><i class="fas fa-check-circle"></i></div>
           <div class="step-text">
-            <h3>Resultat</h3>
-            <p>La preuve que la plateforme est prete pour vous</p>
+            <h3>R&eacute;sultat</h3>
+            <p>La preuve que la plateforme est pr&ecirc;te pour vous</p>
           </div>
         </div>
       </div>
@@ -531,34 +280,34 @@
   <div class="slide slide-3" data-index="2">
     <div class="accent-bar"></div>
     <div class="slide-inner">
-      <div class="section-label">INFRASTRUCTURE</div>
-      <h1 class="main-title">Sous le capot : L'infrastructure PlanET</h1>
+      <div class="section-label" data-anim>INFRASTRUCTURE</div>
+      <h1 class="main-title" data-anim>Sous le capot : L'infrastructure PlanET</h1>
       <div class="flow-row">
-        <div class="flow-card">
+        <div class="flow-card" data-anim>
           <span class="flow-number">1</span>
           <div class="flow-icon-circle"><i class="fas fa-server"></i></div>
           <h3>Tester</h3>
-          <p>Espace Cloud<br>dedie a chacun</p>
+          <p>Espace Cloud<br>d&eacute;di&eacute; &agrave; chacun</p>
         </div>
-        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
-        <div class="flow-card">
+        <div class="flow-arrow" data-anim><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-card" data-anim>
           <span class="flow-number">2</span>
           <div class="flow-icon-circle"><i class="fas fa-code-branch"></i></div>
           <h3>Sauvegarder</h3>
-          <p>Depot centralise<br>pour vos projets</p>
+          <p>D&eacute;p&ocirc;t centralis&eacute;<br>pour vos projets</p>
         </div>
-        <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
-        <div class="flow-card">
+        <div class="flow-arrow" data-anim><i class="fas fa-arrow-right"></i></div>
+        <div class="flow-card" data-anim>
           <span class="flow-number">3</span>
           <div class="flow-icon-circle"><i class="fas fa-shield-alt"></i></div>
-          <h3>Deployer</h3>
-          <p>Environnements<br>100% securises</p>
+          <h3>D&eacute;ployer</h3>
+          <p>Environnements<br>100% s&eacute;curis&eacute;s</p>
         </div>
       </div>
     </div>
-    <div class="bottom-bar">
+    <div class="bottom-bar" data-anim>
       <i class="fas fa-arrow-right"></i>
-      <span>Suite de la reunion...</span>
+      <span>Suite de la r&eacute;union...</span>
     </div>
   </div>
 
@@ -566,7 +315,7 @@
 
 <!-- Navigation -->
 <nav class="nav">
-  <button class="nav-btn" id="prevBtn" aria-label="Precedent"><i class="fas fa-chevron-left"></i></button>
+  <button class="nav-btn" id="prevBtn" aria-label="Pr&eacute;c&eacute;dent"><i class="fas fa-chevron-left"></i></button>
   <div class="nav-dot active" data-goto="0"></div>
   <div class="nav-dot" data-goto="1"></div>
   <div class="nav-dot" data-goto="2"></div>
@@ -574,9 +323,10 @@
   <button class="nav-btn" id="nextBtn" aria-label="Suivant"><i class="fas fa-chevron-right"></i></button>
 </nav>
 
-<div class="hint" id="hint">Fleches &larr; &rarr; ou cliquez pour naviguer</div>
+<div class="hint" id="hint">Fl&egrave;ches &larr; &rarr; ou cliquez pour naviguer</div>
 
 <script>
+(function() {
   const slides = document.querySelectorAll('.slide');
   const dots = document.querySelectorAll('.nav-dot');
   const counter = document.querySelector('.slide-counter');
@@ -584,39 +334,98 @@
   const nextBtn = document.getElementById('nextBtn');
   const hint = document.getElementById('hint');
   let current = 0;
-  let transitioning = false;
+  let animating = false;
 
+  // ── Build GSAP enter timeline for a slide ──
+  function buildEnterTimeline(slide) {
+    const tl = gsap.timeline({ paused: true });
+    const items = slide.querySelectorAll('[data-anim]');
+
+    // Slide itself fades in
+    tl.fromTo(slide, { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.5, ease: 'power3.out' });
+
+    // Stagger children
+    items.forEach((el, i) => {
+      const isCard = el.classList.contains('card-1') || el.classList.contains('flow-card');
+      const isStep = el.classList.contains('step-card');
+
+      if (isCard) {
+        tl.fromTo(el,
+          { opacity: 0, y: 40, scale: 0.92 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.4)' },
+          `-=${0.35}`
+        );
+      } else if (isStep) {
+        tl.fromTo(el,
+          { opacity: 0, x: -40 },
+          { opacity: 1, x: 0, duration: 0.45, ease: 'power2.out' },
+          `-=${0.3}`
+        );
+      } else if (el.classList.contains('flow-arrow')) {
+        tl.fromTo(el,
+          { opacity: 0, scale: 0 },
+          { opacity: 1, scale: 1, duration: 0.3, ease: 'back.out(2)' },
+          `-=${0.25}`
+        );
+      } else if (el.classList.contains('step-connector')) {
+        tl.fromTo(el,
+          { opacity: 0, scaleY: 0 },
+          { opacity: 1, scaleY: 1, duration: 0.25, ease: 'power2.out' },
+          `-=${0.2}`
+        );
+      } else {
+        tl.fromTo(el,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' },
+          `-=${0.3}`
+        );
+      }
+    });
+
+    return tl;
+  }
+
+  // ── Build GSAP exit timeline for a slide ──
+  function buildExitTimeline(slide, direction) {
+    const tl = gsap.timeline({ paused: true });
+    tl.to(slide, {
+      opacity: 0,
+      x: direction > 0 ? -80 : 80,
+      duration: 0.4,
+      ease: 'power2.in'
+    });
+    return tl;
+  }
+
+  // ── Navigate ──
   function goTo(index) {
-    if (index === current || index < 0 || index >= slides.length || transitioning) return;
-    transitioning = true;
+    if (index === current || index < 0 || index >= slides.length || animating) return;
+    animating = true;
 
     const dir = index > current ? 1 : -1;
-    const old = slides[current];
-    const next = slides[index];
+    const oldSlide = slides[current];
+    const newSlide = slides[index];
 
-    // Remove active + add exit
-    old.classList.remove('active');
-    old.classList.add(dir > 0 ? 'exit-left' : '');
-    old.style.transform = dir > 0 ? 'translateX(-60px)' : 'translateX(60px)';
-    old.style.opacity = '0';
+    // Build timelines
+    const exitTl = buildExitTimeline(oldSlide, dir);
+    const enterTl = buildEnterTimeline(newSlide);
 
-    // Prepare incoming
-    next.style.transition = 'none';
-    next.style.transform = dir > 0 ? 'translateX(60px)' : 'translateX(-60px)';
-    next.style.opacity = '0';
-    next.offsetHeight; // force reflow
-    next.style.transition = '';
-    next.classList.add('active');
+    // Prepare new slide
+    gsap.set(newSlide, { opacity: 0, x: dir > 0 ? 80 : -80 });
+    newSlide.classList.add('active');
+
+    // Play exit, then enter
+    exitTl.play().then(() => {
+      oldSlide.classList.remove('active');
+      gsap.set(oldSlide, { clearProps: 'all' });
+
+      enterTl.play().then(() => {
+        animating = false;
+      });
+    });
 
     current = index;
     updateUI();
-
-    setTimeout(() => {
-      old.classList.remove('exit-left');
-      old.style.transform = '';
-      old.style.opacity = '';
-      transitioning = false;
-    }, 650);
   }
 
   function updateUI() {
@@ -626,7 +435,7 @@
     nextBtn.disabled = current === slides.length - 1;
   }
 
-  // Navigation
+  // ── Events ──
   prevBtn.addEventListener('click', () => goTo(current - 1));
   nextBtn.addEventListener('click', () => goTo(current + 1));
   dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.goto)));
@@ -636,15 +445,28 @@
     if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
   });
 
-  // Hide hint after first interaction
-  let hintShown = true;
+  // Hide hint
+  let hintVisible = true;
   function hideHint() {
-    if (hintShown) { hint.style.opacity = '0'; hintShown = false; }
+    if (!hintVisible) return;
+    hintVisible = false;
+    gsap.to(hint, { opacity: 0, duration: 0.5 });
   }
   document.addEventListener('keydown', hideHint);
   document.addEventListener('click', hideHint);
 
+  // ── Init first slide ──
+  gsap.set(slides[0], { opacity: 1, x: 0 });
+  const initTl = buildEnterTimeline(slides[0]);
+  // Set initial state without animation for first slide elements
+  slides[0].querySelectorAll('[data-anim]').forEach(el => {
+    gsap.set(el, { opacity: 0 });
+  });
+  // Play intro after a short delay
+  gsap.delayedCall(0.3, () => initTl.play());
+
   updateUI();
+})();
 </script>
 </body>
 </html>

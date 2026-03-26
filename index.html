@@ -251,6 +251,41 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
   font-size: 2.5rem; opacity: 0; pointer-events: none; z-index: 10;
 }
 
+/* ── Morph Word (Cloud/Claude confusion) ── */
+.morph-word {
+  display: inline-block; position: relative;
+  min-width: 5em;
+}
+.morph-letter {
+  display: inline-block; position: relative;
+  transition: none;
+  font-family: 'Bangers', cursive;
+}
+.morph-letter.changing {
+  animation: letterPop 0.35s ease-out;
+}
+.morph-letter.confused {
+  color: var(--hero-yellow);
+  filter: drop-shadow(0 0 8px rgba(250,204,21,0.8));
+}
+.morph-question {
+  display: inline-block;
+  color: var(--hero-red);
+  animation: questionBounce 0.5s ease-out;
+}
+@keyframes letterPop {
+  0% { transform: scale(1) translateY(0); opacity: 1; }
+  20% { transform: scale(1.8) translateY(-15px) rotate(15deg); opacity: 0.3; color: var(--hero-yellow); filter: drop-shadow(0 0 15px rgba(250,204,21,0.9)); }
+  50% { transform: scale(0.6) translateY(5px) rotate(-10deg); opacity: 0.7; }
+  80% { transform: scale(1.2) translateY(-3px) rotate(3deg); }
+  100% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+}
+@keyframes questionBounce {
+  0% { transform: scale(0) rotate(-30deg); }
+  50% { transform: scale(2) rotate(15deg); color: #EF4444; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
 /* ═══ SLIDE 2 ═══ */
 .slide-2 { background: linear-gradient(180deg, var(--cream), #FFF0D0); }
 .slide-2 .section-label { color: var(--hero-red); }
@@ -572,8 +607,8 @@ html, body { height: 100%; width: 100%; overflow: hidden; font-family: 'Comic Ne
     </svg>
     <div class="slide-inner" style="align-items:center; justify-content:center; text-align:center;">
       <div class="section-label" data-anim>&#128165; FINALE</div>
-      <h1 class="comic-title" data-anim>LE CLAUDE<br>a besoin de VOUS !</h1>
-      <p class="subtitle-final" data-anim>Le Cloud + Claude, c'est votre nouveau super-pouvoir</p>
+      <h1 class="comic-title" data-anim>LE <span id="morphWord" class="morph-word"></span><br>a besoin de VOUS !</h1>
+      <p class="subtitle-final" data-anim>Le Cloud + Claude... on sait pas trop en fait 🤷 Mais c'est votre nouveau super-pouvoir !</p>
       <div class="demo-badge" data-anim>&#127916; PLACE AUX D&Eacute;MOS !</div>
       <div class="bubbles-row">
         <div class="speech-bubble inline" data-anim>
@@ -1250,6 +1285,116 @@ setInterval(cloudClaudeClash, 5500);
 
 
 /* ══════════════════════════════════════════════
+   MORPH WORD: Cloud ↔ Claude confusion
+══════════════════════════════════════════════ */
+const morphEl=document.getElementById('morphWord');
+const morphVariants=[
+  'CLOUD','CLAUDE','CLOWD','CLODE','CLOUDE','CL?UD',
+  'CLAOUD','CLOOD','CLUDE','CLOODE','CL0UD','CLAUD',
+  'CLaUDE','CLOUDD','CLWDE','CLOU?E','C.L.O.U.D',
+  'CLOUD','CLAUDE','CLOD','CLOUDÉ','CL✦UD'
+];
+let morphIdx=0;
+let morphLetters=[];
+
+function morphSetWord(word){
+  // Clear existing letters
+  morphEl.innerHTML='';
+  morphLetters=[];
+  for(let i=0;i<word.length;i++){
+    const span=document.createElement('span');
+    span.className='morph-letter';
+    span.textContent=word[i];
+    // Special styling for ? and special chars
+    if(word[i]==='?' || word[i]==='✦' || word[i]==='0'){
+      span.classList.add('confused');
+    }
+    morphEl.appendChild(span);
+    morphLetters.push(span);
+  }
+}
+
+function morphTransition(){
+  // Only animate on the finale slide (index 5)
+  if(currentSlide!==5) return;
+
+  const nextWord=morphVariants[morphIdx % morphVariants.length];
+  morphIdx++;
+  const currentText=morphEl.textContent;
+
+  // Find max length for comparison
+  const maxLen=Math.max(currentText.length,nextWord.length);
+
+  // Phase 1: flash the letters that will change
+  const changingIndices=[];
+  for(let i=0;i<maxLen;i++){
+    if(i>=currentText.length || i>=nextWord.length || currentText[i]!==nextWord[i]){
+      changingIndices.push(i);
+    }
+  }
+
+  // If no changes, skip
+  if(changingIndices.length===0){morphTransition();return;}
+
+  // Mini flash when letters change
+  if(changingIndices.length>=3){
+    triggerFlash('rgba(250,204,21,0.2)');
+  }
+
+  // Animate out changing letters, then swap, then animate in
+  const tl=gsap.timeline();
+
+  // Scramble phase: rapidly show random letters
+  const scrambleCount=4;
+  const scrambleChars='ABCDEFGHIJKLMNOPQRSTUVWXYZ?!✦☁0#@';
+
+  for(let s=0;s<scrambleCount;s++){
+    tl.call(()=>{
+      changingIndices.forEach(ci=>{
+        if(ci<morphLetters.length){
+          morphLetters[ci].textContent=scrambleChars[Math.floor(Math.random()*scrambleChars.length)];
+          morphLetters[ci].style.color=`hsl(${Math.random()*360},100%,60%)`;
+          gsap.set(morphLetters[ci],{scaleY:0.5+Math.random(),rotation:-15+Math.random()*30});
+        }
+      });
+    },null,s*0.07);
+  }
+
+  // Set final word
+  tl.call(()=>{
+    morphSetWord(nextWord);
+    // Pop animation on changed letters
+    changingIndices.forEach(ci=>{
+      if(ci<morphLetters.length){
+        morphLetters[ci].classList.add('changing');
+        // Emit a tiny VFX spark at letter position
+        const rect=morphLetters[ci].getBoundingClientRect();
+        if(rect.width>0){
+          vfxExplosion(rect.left+rect.width/2, rect.top+rect.height/2, 3,
+            ['#FACC15','#EF4444','#3B82F6','#7C3AED'][Math.floor(Math.random()*4)]);
+        }
+        setTimeout(()=>morphLetters[ci].classList.remove('changing'),400);
+      }
+    });
+  },null,scrambleCount*0.07+0.05);
+
+  // Screen micro-shake
+  const slide5=slides_ref?slides_ref[5]:null;
+  if(slide5 && changingIndices.length>=2){
+    tl.to(slide5,{x:3,duration:0.02},scrambleCount*0.07)
+      .to(slide5,{x:-2,duration:0.02},'+=0')
+      .to(slide5,{x:0,duration:0.03},'+=0');
+  }
+}
+
+// Initialize morph word
+morphSetWord('CLAUDE');
+
+// Run morph every 1.8 seconds on finale slide
+setInterval(morphTransition, 1800);
+
+
+/* ══════════════════════════════════════════════
    CINEMATIC INTRO
 ══════════════════════════════════════════════ */
 const introEl=document.getElementById('intro');
@@ -1606,8 +1751,10 @@ function buildSlide5Anims(tl, slide){
   tl.call(()=>vfxSweep('right','colored',0.3),null,0.3);
   tl.fromTo(label,{opacity:0},{opacity:1,duration:0.15},0.2);
 
-  // Title: big explosion + flash + shockwave
+  // Title: big explosion + flash + shockwave + init morph word
   tl.call(()=>{
+    morphSetWord('CLOUD');
+    morphIdx=0;
     vfxExplosion(innerWidth/2,innerHeight*0.32,16,'#FACC15');
     vfxShockwave(innerWidth/2,innerHeight*0.32,'rgba(250,204,21,0.8)',800);
     triggerFlash('rgba(250,204,21,0.6)');
